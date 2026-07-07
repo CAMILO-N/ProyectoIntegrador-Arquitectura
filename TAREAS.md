@@ -21,13 +21,21 @@ Division basada en el peso de la rubrica (8 criterios, 10 pts totales). Cada blo
 ### 🧩 Integrante 1 — Despliegue y publicacion de API
 **Cubre criterio #5 (3 pts, el de mayor peso) y parte del #4**
 
-- [ ] Correr `docker compose up --build` desde cero y confirmar que los 6 contenedores levantan sin errores
-- [ ] Probar el flujo completo end-to-end (ver seccion "Flujo de prueba" en `README.md`): inscribir estudiante → actualizar progreso a 100 → confirmar que se genera el certificado
-- [ ] Documentar el resultado con capturas de pantalla o logs (evidencia de que "funciona y despliega")
-- [ ] Crear cuenta en [SwaggerHub](https://swaggerhub.com), importar `api-gateway/openapi.yaml`, publicar el API y guardar la URL publica
-- [ ] Si algo falla al levantar el proyecto, corregir el bug (Dockerfile, variables de entorno, docker-compose.yml)
+- [x] Correr `docker compose up --build` desde cero y confirmar que los 6 contenedores levantan sin errores
+- [x] Probar el flujo completo end-to-end (ver seccion "Flujo de prueba" en `README.md`): inscribir estudiante → actualizar progreso a 100 → confirmar que se genera el certificado
+- [x] Documentar el resultado con capturas de pantalla o logs (evidencia de que "funciona y despliega") — ver [`docs/evidencia-despliegue.md`](docs/evidencia-despliegue.md)
+- [x] Crear cuenta en [SwaggerHub](https://swaggerhub.com), importar `api-gateway/openapi.yaml`, publicar el API y guardar la URL publica — publicado en `https://app.swaggerhub.com/apis/udla-735/educonecta-api/1.0.0` (verificado publico en ventana de incognito)
+- [x] Si algo falla al levantar el proyecto, corregir el bug (Dockerfile, variables de entorno, docker-compose.yml) — se encontraron y corrigieron 2 bugs, detallados en `docs/evidencia-despliegue.md`:
+  1. Race condition en el arranque: `depends_on` no esperaba a que Postgres/RabbitMQ estuvieran realmente listos. Se agregaron healthchecks en `docker-compose.yml` y reintentos con backoff en `app-estudiantes/src/queue.js` y `app-certificados-lambda/src/consumer.js`.
+  2. Ruta inconsistente en `app-certificados-lambda` que causaba 404 en `GET /api/certificados/{id}` a traves del gateway. Corregido en `app-certificados-lambda/src/index.js`.
+- [x] Extra (no pedido originalmente, pero util para el C4 del Integrante 2): se agrego una interfaz web minima (`api-gateway/public/`) servida en `http://localhost:8080/` que consume las 3 APIs, para poder *ver* el flujo completo en el navegador en vez de solo con curl/Swagger.
 
-**Archivos relevantes:** `docker-compose.yml`, carpetas `app-*`, `api-gateway/openapi.yaml`, `README.md`
+**Pendiente de validar por el equipo:**
+- [ ] Abrir `http://localhost:8080/` en un navegador y confirmar visualmente que las 3 pestañas (Estudiantes, Docentes, Certificados) funcionan correctamente (formularios, listas, flujo de certificado)
+- [ ] Confirmar que la URL de SwaggerHub sigue siendo publica al momento de entregar (SwaggerHub esta en modo Trial — revisar que no expire antes de la entrega)
+- [ ] Tomar capturas de pantalla de la interfaz web y del flujo funcionando, para reforzar la evidencia en `docs/evidencia-despliegue.md`
+
+**Archivos relevantes:** `docker-compose.yml`, carpetas `app-*`, `api-gateway/openapi.yaml`, `api-gateway/public/`, `docs/evidencia-despliegue.md`, `README.md`
 
 ---
 

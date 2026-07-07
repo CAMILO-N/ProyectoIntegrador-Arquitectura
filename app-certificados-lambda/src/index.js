@@ -12,7 +12,7 @@ app.get('/health', (req, res) => {
 });
 
 // Consultar los certificados emitidos a un estudiante
-app.get('/certificados/:estudianteId', async (req, res) => {
+app.get('/:estudianteId', async (req, res) => {
   const { estudianteId } = req.params;
   try {
     const { rows } = await pool.query(

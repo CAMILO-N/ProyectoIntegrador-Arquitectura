@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduConecta</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>EduConecta</h1>
+    <p>Panel de demostracion del ecosistema (estudiantes, docentes, certificados)</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="estudiantes">Estudiantes</button>
+    <button class="tab-btn" data-tab="docentes">Docentes</button>
+    <button class="tab-btn" data-tab="certificados">Certificados</button>
+  </nav>
+
+  <main>
+    <!-- ESTUDIANTES -->
+    <section id="estudiantes" class="tab-panel active">
+      <div class="card">
+        <h2>Cursos disponibles</h2>
+        <button onclick="cargarCursosEstudiante()">Actualizar lista</button>
+        <ul id="lista-cursos-estudiante" class="lista"></ul>
+      </div>
+
+      <div class="card">
+        <h2>Inscribir estudiante en un curso</h2>
+        <form id="form-inscripcion">
+          <label>ID estudiante <input type="number" id="insc-estudiante-id" required value="1" /></label>
+          <label>ID curso <input type="number" id="insc-curso-id" required value="1" /></label>
+          <button type="submit">Inscribir</button>
+        </form>
+        <pre id="resultado-inscripcion" class="resultado"></pre>
+      </div>
+
+      <div class="card">
+        <h2>Actualizar progreso</h2>
+        <form id="form-progreso">
+          <label>ID inscripcion <input type="number" id="progreso-inscripcion-id" required value="1" /></label>
+          <label>Progreso (0-100) <input type="number" id="progreso-valor" min="0" max="100" required value="100" /></label>
+          <button type="submit">Actualizar progreso</button>
+        </form>
+        <pre id="resultado-progreso" class="resultado"></pre>
+        <p class="hint">Al llegar a 100 se publica el evento <code>curso.completado</code> y se genera el certificado automaticamente.</p>
+      </div>
+    </section>
+
+    <!-- DOCENTES -->
+    <section id="docentes" class="tab-panel">
+      <div class="card">
+        <h2>Crear curso</h2>
+        <form id="form-curso">
+          <label>Titulo <input type="text" id="curso-titulo" required /></label>
+          <label>Descripcion <input type="text" id="curso-descripcion" /></label>
+          <label>ID docente <input type="number" id="curso-docente-id" required value="1" /></label>
+          <button type="submit">Crear curso</button>
+        </form>
+        <pre id="resultado-curso" class="resultado"></pre>
+      </div>
+
+      <div class="card">
+        <h2>Cursos registrados</h2>
+        <button onclick="cargarCursosDocente()">Actualizar lista</button>
+        <ul id="lista-cursos-docente" class="lista"></ul>
+      </div>
+
+      <div class="card">
+        <h2>Estudiantes inscritos en un curso</h2>
+        <form id="form-estudiantes-curso">
+          <label>ID curso <input type="number" id="ver-curso-id" required value="1" /></label>
+          <button type="submit">Consultar</button>
+        </form>
+        <ul id="lista-estudiantes-curso" class="lista"></ul>
+      </div>
+    </section>
+
+    <!-- CERTIFICADOS -->
+    <section id="certificados" class="tab-panel">
+      <div class="card">
+        <h2>Certificados de un estudiante</h2>
+        <form id="form-certificados">
+          <label>ID estudiante <input type="number" id="cert-estudiante-id" required value="1" /></label>
+          <button type="submit">Consultar</button>
+        </form>
+        <ul id="lista-certificados" class="lista"></ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span id="estado-api">Verificando conexion con la API...</span>
+    <a href="/docs" target="_blank">Documentacion Swagger</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

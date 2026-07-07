@@ -1,0 +1,159 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: #0f1115;
+  color: #e6e6e6;
+}
+
+header {
+  padding: 24px 32px;
+  background: #161a22;
+  border-bottom: 1px solid #262b36;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  color: #4fd1c5;
+}
+
+header p {
+  margin: 0;
+  color: #9aa4b2;
+  font-size: 14px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 32px 0;
+  background: #161a22;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: #1f242f;
+  color: #9aa4b2;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  font-size: 14px;
+}
+
+.tab-btn.active {
+  background: #0f1115;
+  color: #4fd1c5;
+  font-weight: 600;
+}
+
+main {
+  padding: 24px 32px;
+  display: none;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+main { display: block; }
+
+.card {
+  background: #161a22;
+  border: 1px solid #262b36;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #e6e6e6;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #9aa4b2;
+  gap: 4px;
+}
+
+input {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #2d3340;
+  background: #0f1115;
+  color: #e6e6e6;
+  min-width: 140px;
+}
+
+button {
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #4fd1c5;
+  color: #0f1115;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover { opacity: 0.9; }
+
+.resultado {
+  margin-top: 12px;
+  padding: 12px;
+  background: #0f1115;
+  border-radius: 8px;
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  min-height: 20px;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lista li {
+  padding: 10px 12px;
+  background: #0f1115;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid #262b36;
+}
+
+.hint {
+  font-size: 12px;
+  color: #9aa4b2;
+  margin: 8px 0 0;
+}
+
+footer {
+  padding: 16px 32px;
+  border-top: 1px solid #262b36;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #9aa4b2;
+}
+
+footer a {
+  color: #4fd1c5;
+}
+
+.ok { color: #4fd1c5; }
+.err { color: #f56565; }

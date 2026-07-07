@@ -15,6 +15,9 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', servicio: 'api-gateway' });
 });
 
+// Interfaz web de demostracion
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
 // Documentacion Swagger centralizada
 const openapiPath = path.join(__dirname, '..', 'openapi.yaml');
 const swaggerDocument = YAML.load(openapiPath);
