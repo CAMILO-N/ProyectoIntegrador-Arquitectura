@@ -1,0 +1,98 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: educonecta-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: educonecta
+      POSTGRES_PASSWORD: educonecta_pass
+      POSTGRES_DB: educonecta
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - educonecta-net
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: educonecta-queue
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: educonecta
+      RABBITMQ_DEFAULT_PASS: educonecta_pass
+    networks:
+      - educonecta-net
+
+  app-estudiantes:
+    build: ./app-estudiantes
+    container_name: educonecta-estudiantes
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgres://educonecta:educonecta_pass@postgres:5432/educonecta
+      RABBITMQ_URL: amqp://educonecta:educonecta_pass@rabbitmq:5672
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - educonecta-net
+
+  app-docentes:
+    build: ./app-docentes
+    container_name: educonecta-docentes
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      DATABASE_URL: postgres://educonecta:educonecta_pass@postgres:5432/educonecta
+    depends_on:
+      - postgres
+    networks:
+      - educonecta-net
+
+  app-certificados:
+    build: ./app-certificados-lambda
+    container_name: educonecta-certificados
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      DATABASE_URL: postgres://educonecta:educonecta_pass@postgres:5432/educonecta
+      RABBITMQ_URL: amqp://educonecta:educonecta_pass@rabbitmq:5672
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - educonecta-net
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: educonecta-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ESTUDIANTES_URL: http://app-estudiantes:3001
+      DOCENTES_URL: http://app-docentes:3002
+      CERTIFICADOS_URL: http://app-certificados:3003
+    depends_on:
+      - app-estudiantes
+      - app-docentes
+      - app-certificados
+    networks:
+      - educonecta-net
+
+networks:
+  educonecta-net:
+    driver: bridge
+
+volumes:
+  pgdata:

@@ -1,0 +1,294 @@
+openapi: 3.0.3
+info:
+  title: EduConecta API
+  description: API centralizada del ecosistema EduConecta (estudiantes, docentes, certificados)
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Entorno local via Docker Compose
+tags:
+  - name: Estudiantes
+  - name: Docentes
+  - name: Certificados
+
+paths:
+  /estudiantes/cursos:
+    get:
+      summary: Listar cursos disponibles
+      tags: [Estudiantes]
+      responses:
+        '200':
+          description: Lista de cursos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Curso'
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+  /estudiantes/inscripciones:
+    post:
+      summary: Inscribir estudiante en un curso
+      tags: [Estudiantes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [estudiante_id, curso_id]
+              properties:
+                estudiante_id:
+                  type: integer
+                  example: 1
+                curso_id:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Inscripcion creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inscripcion'
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+  /estudiantes/inscripciones/{id}/progreso:
+    patch:
+      summary: Actualizar el progreso de un estudiante en un curso
+      description: Si el progreso llega a 100, se publica el evento curso.completado en la cola y se dispara la generacion automatica del certificado.
+      tags: [Estudiantes]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [progreso]
+              properties:
+                progreso:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  example: 100
+      responses:
+        '200':
+          description: Progreso actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inscripcion'
+        '404':
+          description: Inscripcion no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+  /docentes/cursos:
+    post:
+      summary: Crear un curso
+      tags: [Docentes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [titulo, docente_id]
+              properties:
+                titulo:
+                  type: string
+                  example: Diseno de Objetos de Aprendizaje
+                descripcion:
+                  type: string
+                  example: Curso introductorio de OA
+                docente_id:
+                  type: integer
+                  example: 1
+      responses:
+        '201':
+          description: Curso creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Curso'
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+    get:
+      summary: Listar cursos
+      tags: [Docentes]
+      responses:
+        '200':
+          description: Lista de cursos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Curso'
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+  /docentes/cursos/{id}/estudiantes:
+    get:
+      summary: Ver estudiantes inscritos en un curso
+      tags: [Docentes]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Lista de estudiantes inscritos con su progreso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EstudianteConProgreso'
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+  /certificados/{estudianteId}:
+    get:
+      summary: Consultar certificados emitidos a un estudiante
+      tags: [Certificados]
+      parameters:
+        - name: estudianteId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Lista de certificados del estudiante
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Certificado'
+        '500':
+          $ref: '#/components/responses/ErrorInterno'
+
+components:
+  schemas:
+    Curso:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        titulo:
+          type: string
+          example: Diseno de Objetos de Aprendizaje
+        descripcion:
+          type: string
+          example: Curso introductorio de OA
+        docente_id:
+          type: integer
+          example: 1
+        creado_en:
+          type: string
+          format: date-time
+
+    Estudiante:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: Estudiante Demo
+        email:
+          type: string
+          example: demo@udla.edu.ec
+        creado_en:
+          type: string
+          format: date-time
+
+    EstudianteConProgreso:
+      allOf:
+        - $ref: '#/components/schemas/Estudiante'
+        - type: object
+          properties:
+            progreso:
+              type: integer
+              example: 100
+            completado:
+              type: boolean
+              example: true
+
+    Inscripcion:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        estudiante_id:
+          type: integer
+          example: 1
+        curso_id:
+          type: integer
+          example: 1
+        progreso:
+          type: integer
+          example: 100
+        completado:
+          type: boolean
+          example: true
+        inscrito_en:
+          type: string
+          format: date-time
+
+    Certificado:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        estudiante_id:
+          type: integer
+          example: 1
+        curso_id:
+          type: integer
+          example: 1
+        codigo:
+          type: string
+          example: CERT-1-1-A1B2C3D4
+        emitido_en:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Inscripcion no encontrada
+
+  responses:
+    ErrorInterno:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
